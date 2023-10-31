@@ -1,0 +1,21 @@
+{
+  "name": "wallet-tracker",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "devDependencies": {
+    "@types/find-config": "^1.0.3",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "eslint": "^8.52.0",
+    "typescript": "^5.2.2"
+  },
+  "workspaces": [
+    "src/*"
+  ],
+  "dependencies": {
+    "find-config": "^1.0.0"
+  }
+}

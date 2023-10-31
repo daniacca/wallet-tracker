@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo
+    hostname: "mongo.io"
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    env_file: ./.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASSWORD
+    ports:
+      - $DB_PORT:$DB_PORT
+    volumes:
+      - db:/data/db
+
+  app:
+    depends_on:
+      - mongodb
+    build:
+      context: ./
+      dockerfile: ./src/webapi/Dockerfile
+    restart: unless-stopped
+    env_file: ./src/webapi/.env
+    environment:
+      - DB_HOST=mongo.io
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_NAME=$DB_NAME
+      - DB_PORT=$DB_PORT
+    ports:
+      - 3000:3000
+    stdin_open: true
+    tty: true
+
+volumes:
+  db: {}
+
+networks:
+  backend: {}
