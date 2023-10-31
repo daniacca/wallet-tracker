@@ -1,11 +1,7 @@
 import express from "express";
-import dotenv from "dotenv";
-import findConfig from "find-config";
 import cors from "cors";
-import connectDB, { testConnection } from "./config/db.config.js";
-
-const dotenvPath = findConfig(".env");
-dotenv.config({ path: dotenvPath });
+import connectDB, { testConnection } from "./config/db.js";
+import config from "./config/env.js";
 
 connectDB()
   .then(() => {
@@ -17,7 +13,7 @@ connectDB()
   });
 
 const app = express();
-const port = process.env.SERVER_PORT || 3000;
+const port = config.server.port;
 
 // Enable CORS
 app.use(cors({ origin: "*" }));
@@ -33,10 +29,10 @@ app.get("/", (_, res) => {
 // health check route
 app.get("/health", (_, res) => {
   if (testConnection() !== 1) {
-    res.status(500).send({ message: "Server is down" });
+    res.status(500).send({ status: "KO", message: "Server is down" });
     return;
   }
-  res.send({ message: "Server is up and running" });
+  res.send({ status: "OK", message: "Server is up and all systems running" });
 });
 
 app.listen(port, () => {

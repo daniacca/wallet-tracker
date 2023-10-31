@@ -1,13 +1,10 @@
-import dotenv from "dotenv";
 import mongoose from "mongoose";
+import config from "./env.js";
 
-dotenv.config();
+const { host, name, password, port, user } = config.db;
 
-const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
 const url =
-  DB_USER && DB_PASSWORD && DB_HOST && DB_PORT && DB_NAME
-    ? `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`
-    : "mongodb://127.0.0.1/wallet-db";
+  user && password && host && port && name ? `mongodb://${user}:${password}@${host}:${port}/${name}?authSource=admin` : "mongodb://127.0.0.1/wallet-db";
 
 mongoose.set("strictQuery", false);
 
