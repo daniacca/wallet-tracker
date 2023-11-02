@@ -1,26 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
+import { ITransaction, TransactionType } from "./interfaces/ITransaction.js";
 
-export enum TransactionType {
-  INCOME = "INCOME",
-  EXPENSE = "EXPENSE",
-}
-
-export type Transaction = {
-  id: string;
-  amount: number;
-  type: TransactionType;
-  description?: string;
-  createdAt: Date;
-  userId: string;
-};
-
-const TransactionSchema = new Schema({
+const TransactionSchema: Schema = new Schema({
   amount: { type: Number, required: true },
   type: { type: String, required: true, enum: Object.values(TransactionType) },
   description: { type: String, maxlength: 100 },
-  createdAt: { type: Date, default: Date.now },
   userId: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
-const TransactionModel = mongoose.model("Transaction", TransactionSchema);
-export default TransactionModel;
+export type TransactionDocument = ITransaction & Document;
+
+const Transaction = mongoose.model<TransactionDocument>("Transaction", TransactionSchema);
+export default Transaction;

@@ -1,6 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
+import { IUser } from "./interfaces/IUser.js";
 
-const UserSchema = new Schema(
+const UserSchema: Schema = new Schema(
   {
     name: { type: String, required: true, maxlength: 50 },
     email: { type: String, required: true, maxlength: 100 },
@@ -11,14 +12,7 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export type UserDocument = IUser & Document;
 
-const UserModel = mongoose.model("User", UserSchema);
-export default UserModel;
+const User = mongoose.model<UserDocument>("User", UserSchema);
+export default User;
