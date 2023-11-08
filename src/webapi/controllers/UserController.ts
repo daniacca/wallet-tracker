@@ -7,7 +7,7 @@ const users = repositoryFactory("User");
 
 interface UserDto extends IUser {}
 
-@Route("api/users")
+@Route("users")
 @Tags("Users")
 export class UserController extends Controller {
   @Get("/")

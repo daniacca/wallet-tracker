@@ -7,7 +7,7 @@ const transaction = repositoryFactory("Transaction");
 
 interface TransactionDto extends ITransaction {}
 
-@Route("api/transactions")
+@Route("transactions")
 @Tags("Transactions")
 export class TransactionController extends Controller {
   @Get("/")
