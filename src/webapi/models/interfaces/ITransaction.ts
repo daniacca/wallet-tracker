@@ -1,13 +1,13 @@
+import { IEntitiy } from "./IEntity.js";
+
 export enum TransactionType {
   INCOME = "INCOME",
   EXPENSE = "EXPENSE",
 }
 
-export interface ITransaction {
-  _id: string;
+export interface ITransaction extends IEntitiy {
   amount: number;
   type: TransactionType;
   description?: string;
-  createdAt: Date;
   userId: string;
 }

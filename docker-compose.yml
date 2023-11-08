@@ -20,6 +20,20 @@ services:
     volumes:
       - db:/data/db
 
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    env_file: ./.env
+    environment:
+      ME_CONFIG_MONGODB_AUTH_USERNAME: $DB_USER
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: $DB_PASSWORD
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: "$DB_PORT"
+    ports:
+      - "0.0.0.0:8081:8081"
+    depends_on:
+      - mongodb
+
   app:
     depends_on:
       - mongodb

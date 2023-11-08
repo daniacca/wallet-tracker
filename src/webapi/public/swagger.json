@@ -6,15 +6,16 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"UserDto": {
+			"TransactionType": {
+				"enum": [
+					"INCOME",
+					"EXPENSE"
+				],
+				"type": "string"
+			},
+			"TransactionDto": {
 				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"password": {
+					"_id": {
 						"type": "string"
 					},
 					"createdAt": {
@@ -25,17 +26,55 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"$ref": "#/components/schemas/TransactionType"
+					},
+					"description": {
+						"type": "string"
+					},
+					"userId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"amount",
+					"type",
+					"userId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserDto": {
+				"properties": {
 					"_id": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"password": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"name",
 					"email",
-					"password",
-					"createdAt",
-					"updatedAt",
-					"_id"
+					"password"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -54,7 +93,7 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/api/users": {
+		"/api/transactions": {
 			"get": {
 				"operationId": "Find",
 				"responses": {
@@ -64,7 +103,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/UserDto"
+										"$ref": "#/components/schemas/TransactionDto"
 									},
 									"type": "array"
 								}
@@ -72,6 +111,9 @@
 						}
 					}
 				},
+				"tags": [
+					"Transactions"
+				],
 				"security": [],
 				"parameters": []
 			},
@@ -89,6 +131,9 @@
 						}
 					}
 				},
+				"tags": [
+					"Transactions"
+				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -96,28 +141,31 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/UserDto"
+								"$ref": "#/components/schemas/TransactionDto"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/api/users/{id}": {
+		"/api/transactions/{id}": {
 			"get": {
-				"operationId": "FindUserById",
+				"operationId": "FindById",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/UserDto"
+									"$ref": "#/components/schemas/TransactionDto"
 								}
 							}
 						}
 					}
 				},
+				"tags": [
+					"Transactions"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -144,6 +192,163 @@
 						}
 					}
 				},
+				"tags": [
+					"Transactions"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TransactionDto"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "Remove",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transactions"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/users": {
+			"get": {
+				"operationId": "Find",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/UserDto"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "Create",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserDto"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/users/{id}": {
+			"get": {
+				"operationId": "FindById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserDto"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "Update",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -180,6 +385,9 @@
 						}
 					}
 				},
+				"tags": [
+					"Users"
+				],
 				"security": [],
 				"parameters": [
 					{
@@ -196,7 +404,7 @@
 	},
 	"servers": [
 		{
-			"url": "/"
+			"url": "/api"
 		}
 	]
 }

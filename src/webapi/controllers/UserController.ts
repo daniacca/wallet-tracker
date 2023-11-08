@@ -1,16 +1,15 @@
-import { IUser } from "../../models/interfaces/IUser.js";
-import { UserDocument } from "../../models/user.js";
-import { repositoryFactory } from "../../repository/repositoryFactory.js";
-import { Get, Post, Put, Delete, Route, Body, Path } from "tsoa";
+import { IUser } from "../models/interfaces/IUser.js";
+import { UserDocument } from "../models/user.js";
+import { repositoryFactory } from "../repository/repositoryFactory.js";
+import { Get, Post, Put, Delete, Route, Body, Path, Controller, Tags } from "tsoa";
 
 const users = repositoryFactory("User");
 
-interface UserDto extends IUser {
-  _id: string;
-}
+interface UserDto extends IUser {}
 
 @Route("api/users")
-export default class UserController {
+@Tags("Users")
+export class UserController extends Controller {
   @Get("/")
   public async find(): Promise<UserDto[]> {
     const result = (await users.find()) as UserDocument[];
@@ -25,7 +24,7 @@ export default class UserController {
   }
 
   @Get("/:id")
-  public async findUserById(@Path() id: string): Promise<UserDto> {
+  public async findById(@Path() id: string): Promise<UserDto> {
     const doc = (await users.findOne(id)) as UserDocument;
     return {
       _id: doc._id,
@@ -45,13 +44,11 @@ export default class UserController {
 
   @Put("/:id")
   public async update(@Path() id: string, @Body() data: UserDto): Promise<boolean> {
-    const result = await users.update(id, data);
-    return result;
+    return await users.update(id, data);
   }
 
   @Delete("/:id")
   public async remove(@Path() id: string): Promise<boolean> {
-    const result = await users.delete(id);
-    return result;
+    return await users.delete(id);
   }
 }

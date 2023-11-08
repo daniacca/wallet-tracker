@@ -1,7 +1,7 @@
-export interface IUser {
+import { IEntitiy } from "./IEntity.js";
+
+export interface IUser extends IEntitiy {
   name: string;
   email: string;
   password: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

@@ -2,8 +2,11 @@ import express from "express";
 import cors from "cors";
 import connectDB, { testConnection } from "./config/db.js";
 import config from "./config/env.js";
-import userRoutes from "./routes/user/userRoutes.js";
 import swaggerUi from "swagger-ui-express";
+import logger from "morgan";
+import { RegisterRoutes } from "./routes/routes.js";
+import { ValidateError } from "tsoa";
+import { Request as ExRequest, Response as ExResponse, NextFunction } from "express";
 
 connectDB()
   .then(() => {
@@ -17,13 +20,22 @@ connectDB()
 const app = express();
 const port = config.server.port;
 
-// Enable CORS
+// HTTP middleware request logger
+app.use(logger("dev"));
+
+// CORS middleware
 app.use(cors({ origin: "*" }));
 
 // Parse requests of content-type - application/json
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
 app.use(express.json());
 
-// static files
+// static files - public folder
 app.use(express.static("public"));
 
 // base route
@@ -50,7 +62,32 @@ app.use(
   })
 );
 
-userRoutes(app);
+RegisterRoutes(app);
+
+// Handle not found route
+app.use((_req, res: ExResponse) => {
+  res.status(404).send({
+    message: "Not Found",
+  });
+});
+
+// General Error Handler Middleware
+app.use((err: unknown, req: ExRequest, res: ExResponse, next: NextFunction): ExResponse | void => {
+  if (err instanceof ValidateError) {
+    console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
+    return res.status(422).json({
+      message: "Validation Failed",
+      details: err?.fields,
+    });
+  }
+  if (err instanceof Error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+
+  next();
+});
 
 app.listen(port, () => {
   return console.log(`Server is running at http://localhost:${port}`);
