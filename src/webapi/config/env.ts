@@ -4,7 +4,7 @@ import findConfig from "find-config";
 const dotenvPath = findConfig(".env");
 dotenv.config({ path: dotenvPath });
 
-const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, SERVER_PORT } = process.env;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, SERVER_PORT, TOKEN_SECRET } = process.env;
 
 const config = {
   db: {
@@ -16,6 +16,9 @@ const config = {
   },
   server: {
     port: SERVER_PORT || 3000,
+    jwtToken: {
+      secret: TOKEN_SECRET || "secret",
+    },
   },
 };
 

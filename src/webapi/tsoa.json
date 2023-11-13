@@ -6,11 +6,18 @@
     "outputDirectory": "public",
     "specVersion": 3,
     "basePath": "/api",
-    "entryFile": "app.ts"
+    "entryFile": "app.ts",
+    "securityDefinitions": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
   },
   "routes": {
     "routesDir": "routes",
     "basePath": "/api",
-    "entryFile": "app.ts"
+    "entryFile": "app.ts",
+    "authenticationModule": "./middlewares/authentication.ts"
   }
 }

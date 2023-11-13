@@ -6,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import logger from "morgan";
 import { RegisterRoutes } from "./routes/routes.js";
 import { ValidateError } from "tsoa";
-import { Request as ExRequest, Response as ExResponse, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 
 connectDB()
   .then(() => {
@@ -18,7 +18,6 @@ connectDB()
   });
 
 const app = express();
-const port = config.server.port;
 
 // HTTP middleware request logger
 app.use(logger("dev"));
@@ -52,6 +51,7 @@ app.get("/health", (_, res) => {
   res.send({ status: "OK", message: "Server is up and all systems running" });
 });
 
+// Swagger UI
 app.use(
   "/docs",
   swaggerUi.serve,
@@ -65,14 +65,14 @@ app.use(
 RegisterRoutes(app);
 
 // Handle not found route
-app.use((_req, res: ExResponse) => {
+app.use((_req, res: Response) => {
   res.status(404).send({
     message: "Not Found",
   });
 });
 
 // General Error Handler Middleware
-app.use((err: unknown, req: ExRequest, res: ExResponse, next: NextFunction): ExResponse | void => {
+app.use((err: unknown, req: Request, res: Response, next: NextFunction): Response | void => {
   if (err instanceof ValidateError) {
     console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
     return res.status(422).json({
@@ -80,14 +80,18 @@ app.use((err: unknown, req: ExRequest, res: ExResponse, next: NextFunction): ExR
       details: err?.fields,
     });
   }
+
   if (err instanceof Error) {
-    return res.status(500).json({
-      message: "Internal Server Error",
+    console.error(`Caught General Error for ${req.path}:`, JSON.stringify(err));
+    return res.status(err["status"] || 500).json({
+      message: err.message || "Internal Server Error",
     });
   }
 
   next();
 });
+
+const port = config.server.port;
 
 app.listen(port, () => {
   return console.log(`Server is running at http://localhost:${port}`);
