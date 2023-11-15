@@ -7,10 +7,15 @@ import logger from "morgan";
 import { RegisterRoutes } from "./routes/routes.js";
 import { ValidateError } from "tsoa";
 import { Request, Response, NextFunction } from "express";
+import { AuthenticationError } from "./middlewares/authentication.js";
+import populateDb from "./scripts/populateDb.js";
 
 connectDB()
   .then(() => {
     console.log("Successfully connected to DB");
+    populateDb().then(() => {
+      console.log("Successfully populated DB");
+    });
   })
   .catch((err) => {
     console.log(err);
@@ -78,6 +83,13 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction): Respons
     return res.status(422).json({
       message: "Validation Failed",
       details: err?.fields,
+    });
+  }
+
+  if (err instanceof AuthenticationError) {
+    console.warn(`Caught Authentication Error for ${req.path}:`, err.message);
+    return res.status(err.status).json({
+      message: err.message || "Authentication Error",
     });
   }
 
