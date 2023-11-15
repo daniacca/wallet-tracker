@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import connectDB, { testConnection } from "./config/db.js";
+import connectDB, { testConnection, waitConnection } from "./config/db.js";
 import config from "./config/env.js";
 import swaggerUi from "swagger-ui-express";
 import logger from "morgan";
@@ -13,8 +13,11 @@ import populateDb from "./scripts/populateDb.js";
 connectDB()
   .then(() => {
     console.log("Successfully connected to DB");
-    populateDb().then(() => {
-      console.log("Successfully populated DB");
+    waitConnection().then((connected) => {
+      if (connected)
+        populateDb().then(() => {
+          console.log("Successfully populated DB");
+        });
     });
   })
   .catch((err) => {
@@ -49,7 +52,7 @@ app.get("/", (_, res) => {
 
 // health check route
 app.get("/health", (_, res) => {
-  if (testConnection() !== 1) {
+  if (!testConnection()) {
     res.status(500).send({ status: "KO", message: "DB is down!" });
     return;
   }
